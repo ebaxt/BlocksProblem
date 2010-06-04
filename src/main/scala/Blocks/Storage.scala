@@ -10,7 +10,11 @@ final class Storage(val columns: List[Column]) {
 }
 
 object Storage {
-  def apply(args: Column*) = {
+  def apply(args: Column*): Storage = {
     new Storage(args.toList)
+  }
+
+  def apply(boxes: List[String]): Storage = {
+    new Storage(boxes.map(b => Column(b)))
   }
 }

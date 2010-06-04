@@ -24,4 +24,9 @@ class StorageTest {
     Assert.assertEquals(new Storage(List(Column("a"))), Storage(Column("a")))
     Assert.assertEquals(new Storage(List(Column("a"), Column("b", "c"))), Storage(Column("a"), Column("b", "c")))
   }
+
+  @Test def factoryShouldPopulateStorageFromStringArgs() {
+    Assert.assertEquals(Storage(Column("a")), Storage(List("a")))
+    Assert.assertEquals(Storage(Column("a"), Column("b"), Column("c")), Storage(List("a", "b", "c")))
+  }
 }
