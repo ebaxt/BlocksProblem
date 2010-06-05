@@ -11,12 +11,12 @@ final class Storage(val columns: List[Column]) {
 		new StorageInFlux(new Storage(result._1), result._2)
 	}
 
-	private type Action = (Box, Column, Column) => (Column, Column)
+	private type Action = (Box, Column) => (Column, Column)
 
 	private def displace(box: Box, l0: List[Column], action: Action)
 	: (List[Column], Column) = l0 match {
 		case column :: l1 => if (column.contains(box)) {
-				val newColumns = action(box, column, Column())
+				val newColumns = action(box, column)
 				(newColumns._1 :: l1, newColumns._2)
 			} else {
 				prependColumn(displace(box, l1, action), column)
@@ -27,13 +27,13 @@ final class Storage(val columns: List[Column]) {
 	private def prependColumn(displacement: (List[Column], Column), column: Column)
 	: (List[Column], Column) = (column :: displacement._1, displacement._2)
 
-	private def pile(box: Box, source: Column, target: Column): (Column, Column) = {
-		val unstacked = unstack(box, source, target)
+	private def pile(box: Box, source: Column): (Column, Column) = {
+		val unstacked = unstack(box, source, Column())
 		(unstacked._1, unstacked._2.push(box))
 	}
 
-	private def move(box: Box, source: Column, target: Column): (Column, Column) = {
-		val unstacked = unstack(box, source, target)
+	private def move(box: Box, source: Column): (Column, Column) = {
+		val unstacked = unstack(box, source, Column())
 		(unstacked._1.pushAll(unstacked._2), new Column(List(box)))
 	}
 
