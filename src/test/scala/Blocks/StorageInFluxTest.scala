@@ -20,13 +20,16 @@ class StorageInFluxTest {
 			new StorageInFlux(Storage(Column("a"), Column()), Column("c", "b"))))
 	}
 
-	@Ignore
 	@Test def moveOverShouldPlaceOnTop() {
-
+		assertEquals(Storage(Column("b", "a"), Column()), 
+			new StorageInFlux(Storage(Column("a"), Column()), Column("b")).over(new Box("a")))
+		assertEquals(Storage(Column("c"), Column("b", "a")), 
+			new StorageInFlux(Storage(Column("c"), Column("a")), Column("b")).over(new Box("a")))
 	}
 
-	@Ignore
 	@Test def pileOverShouldPlaceOnTop() {
+		assertEquals(Storage(Column("c"), Column("d", "b", "a")), 
+			new StorageInFlux(Storage(Column("c"), Column("a")), Column("b", "d")).over(new Box("a")))
 
 	}
 
