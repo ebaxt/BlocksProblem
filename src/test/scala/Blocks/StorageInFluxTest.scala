@@ -2,6 +2,7 @@ package Blocks
 
 import org.scalatest.junit.{ShouldMatchersForJUnit}
 import org.junit.Test
+import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import junit.framework.Assert._
@@ -17,5 +18,25 @@ class StorageInFluxTest {
 			new StorageInFlux(Storage(Column("a"), Column("c")), Column("b"))))
 		assertFalse((new StorageInFlux(Storage(Column("a"), Column()), Column("b"))).equals(
 			new StorageInFlux(Storage(Column("a"), Column()), Column("c", "b"))))
+	}
+
+	@Ignore
+	@Test def moveOverShouldPlaceOnTop() {
+
+	}
+
+	@Ignore
+	@Test def pileOverShouldPlaceOnTop() {
+
+	}
+
+	@Ignore
+	@Test def moveOntoShouldPlaceInStack() {
+
+	}
+
+	@Ignore
+	@Test def pileOntoShouldPlaceInStack() {
+
 	}
 }
