@@ -1,8 +1,8 @@
 package Blocks
 
 final class Storage(val columns: List[Column]) {
-	def move(box: Box): StorageInFlux = displace(box, move)
-
+	def move(box: Box): StorageInFlux = new StorageInFlux(
+		applyToMatchingColumns(box, move), new Column(List(box)))
 	def pile(box: Box): StorageInFlux = displace(box, pile)
 
 	type Action = (Box, Column) => Column
@@ -37,9 +37,9 @@ final class Storage(val columns: List[Column]) {
 		(unstacked._1, unstacked._2.push(box))
 	}
 
-	private def move(box: Box, source: Column): (Column, Column) = {
+	private def move(box: Box, source: Column): Column = {
 		val unstacked = unstack(box, source, Column())
-		(unstacked._1.pushAll(unstacked._2), new Column(List(box)))
+		(unstacked._1.pushAll(unstacked._2))
 	}
 
 	/**
