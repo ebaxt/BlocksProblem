@@ -64,7 +64,7 @@ class StorageTest {
 			Storage(Column("d", "a"), Column("b", "c")).pile(new Box("c")).storage)
 		assertEquals(new StorageInFlux(Storage(Column("d", "a"), Column()), Column("c", "b")),
 			Storage(Column("d", "a"), Column("b", "c")).pile(new Box("c")))
-		assertEquals(new StorageInFlux(Storage(Column("d"), Column("b", "c")), Column("a")),
-			Storage(Column("d", "a"), Column("b", "c")).move(new Box("a")))
+		assertEquals(new StorageInFlux(Storage(Column(), Column("b", "c")), Column("a", "d")),
+			Storage(Column("d", "a"), Column("b", "c")).pile(new Box("a")))
 	}
 }

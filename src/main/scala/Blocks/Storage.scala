@@ -27,23 +27,37 @@ final class Storage(val columns: List[Column]) {
 	private def prependColumn(displacement: (List[Column], Column), column: Column)
 	: (List[Column], Column) = (column :: displacement._1, displacement._2)
 
-	private def pile(box: Box, source: Column, target: Column): (Column, Column) = if (source.isEmpty) {
-		throw new IllegalStateException()
-	} else {
-		val pop = source.pop
-		if (box == pop._2) (pop._1, target.push(box))
-		else pile(box, pop._1, target.push(pop._2))
+	private def pile(box: Box, source: Column, target: Column): (Column, Column) = {
+		val unstacked = unstack(box, source, target)
+		(unstacked._1, unstacked._2.push(box))
 	}
 
-	private def move(box: Box, source: Column, target: Column): (Column, Column) = if (source.isEmpty) {
+	private def move(box: Box, source: Column, target: Column): (Column, Column) = {
+		val unstacked = unstack(box, source, target)
+		(pushAll(unstacked._1, unstacked._2), new Column(List(box)))
+	}
+
+	/**
+	 * Unstacks elements until it encounters box. Returns a tuple with the elements remaining on the stack
+	 * and elements taken from the stack (excluding box)
+	 */
+	private def unstack(box: Box, source: Column, target: Column): (Column, Column) = if (source.isEmpty) {
 		throw new IllegalStateException()
 	} else {
 		val pop = source.pop
-		if (box == pop._2) (pop._1, new Column(List(box)))
-		else {
-			val result = move(box, pop._1, target)
-			(result._1.push(pop._2), result._2)
-		}
+		if (box == pop._2) (pop._1, target)
+		else unstack(box, pop._1, target.push(pop._2))
+	}
+
+	/**
+	 * Push all elements onto the stack
+	 */
+	private def pushAll(target: Column, source: Column)
+	: Column = if (source.isEmpty) {
+		target
+	} else {
+		val pop = source.pop
+		pushAll(target.push(pop._2), pop._1)
 	}
 
 	override def equals(o: Any) = o match {
