@@ -1,13 +1,13 @@
 package Blocks
 
 final class StorageInFlux(val storage: Storage, val boxesInTransit: Column) {
-	def over(box: Box): Storage = new Storage(storage.columns.map(
-		c => if (c.contains(box)) c.pushAll(boxesInTransit) else c))
+	def over(box: Box): Storage = storage.applyToMatchingColumns(box, over)
 
-	def onto(box: Box): Storage = new Storage(storage.columns.map(
-		c => if (c.contains(box)) onto(c, box) else c))
+	def onto(box: Box): Storage = storage.applyToMatchingColumns(box, onto)
 
-	private def onto(c: Column, box: Box): Column = {
+	private def over(b: Box, c: Column): Column = c.pushAll(boxesInTransit)
+
+	private def onto(box: Box, c: Column): Column = {
 		val unstacked = unstackInclusive(box, c, Column())
 		unstacked._1.pushAll(boxesInTransit).pushAll(unstacked._2)
 	}

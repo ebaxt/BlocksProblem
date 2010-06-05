@@ -5,15 +5,20 @@ final class Storage(val columns: List[Column]) {
 
 	def pile(box: Box): StorageInFlux = displace(box, pile)
 
-	def displace(box: Box, action: Action)
+	type Action = (Box, Column) => Column
+	type Action2 = (Box, Column) => (Column, Column)
+
+	def applyToMatchingColumns(box: Box, action: Action) =
+		new Storage(columns.map(
+			c => if (c.contains(box)) action(box, c) else c))
+
+	private def displace(box: Box, action: Action2)
 	: StorageInFlux = {
 		val result = displace(box, columns, action)
 		new StorageInFlux(new Storage(result._1), result._2)
 	}
 
-	private type Action = (Box, Column) => (Column, Column)
-
-	private def displace(box: Box, l0: List[Column], action: Action)
+	private def displace(box: Box, l0: List[Column], action: Action2)
 	: (List[Column], Column) = l0 match {
 		case column :: l1 => if (column.contains(box)) {
 				val newColumns = action(box, column)
