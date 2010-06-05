@@ -2,11 +2,19 @@ package Blocks
 
 final class Column(val contents: List[Box]) {
 	def push(box: Box): Column = new Column(box :: contents) 
-	def pop: (Column, Box) = contents match {
-		case box :: remainder => (new Column(remainder), box)
+
+	def top: Box = contents match {
+		case box :: _ => box
 		case Nil => throw new IllegalStateException()
 	}
+
+	def pop: Column = contents match {
+		case box :: remainder => new Column(remainder)
+		case Nil => throw new IllegalStateException()
+	}
+
 	def contains(box: Box): Boolean = contents.contains(box)
+
 	def isEmpty: Boolean = contents.isEmpty
 
 	override def equals(o: Any) = o match {

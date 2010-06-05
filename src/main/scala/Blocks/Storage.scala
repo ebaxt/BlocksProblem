@@ -44,9 +44,8 @@ final class Storage(val columns: List[Column]) {
 	private def unstack(box: Box, source: Column, target: Column): (Column, Column) = if (source.isEmpty) {
 		throw new IllegalStateException()
 	} else {
-		val pop = source.pop
-		if (box == pop._2) (pop._1, target)
-		else unstack(box, pop._1, target.push(pop._2))
+		if (box == source.top) (source.pop, target)
+		else unstack(box, source.pop, target.push(source.top))
 	}
 
 	/**
@@ -56,8 +55,7 @@ final class Storage(val columns: List[Column]) {
 	: Column = if (source.isEmpty) {
 		target
 	} else {
-		val pop = source.pop
-		pushAll(target.push(pop._2), pop._1)
+		pushAll(target.push(source.top), source.pop)
 	}
 
 	override def equals(o: Any) = o match {
