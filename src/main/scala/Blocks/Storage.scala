@@ -3,7 +3,15 @@ package Blocks
 final class Storage(val columns: List[Column]) {
 	def move(box: Box): StorageInFlux = new StorageInFlux(
 		applyToMatchingColumns(box, move), new Column(List(box)))
-	def pile(box: Box): StorageInFlux = displace(box, pile)
+
+	def pile(box: Box): StorageInFlux = {
+		val str = applyToMatchingColumns(box, pile)
+		val bit = columns.find(c => c.contains(box)) match {
+			case Some(c) => topTo(box, c, Column())
+			case None => throw new IllegalStateException()
+		}
+		new StorageInFlux(str, bit)
+	}
 
 	type Action = (Box, Column) => Column
 	type Action2 = (Box, Column) => (Column, Column)
@@ -12,29 +20,19 @@ final class Storage(val columns: List[Column]) {
 		new Storage(columns.map(
 			c => if (c.contains(box)) action(box, c) else c))
 
-	private def displace(box: Box, action: Action2)
-	: StorageInFlux = {
-		val result = displace(box, columns, action)
-		new StorageInFlux(new Storage(result._1), result._2)
+	private def topTo(b: Box, source: Column, target: Column)
+	: Column = if (source.isEmpty) throw new IllegalStateException()
+	else {
+		if (source.top == b) {
+			target.push(source.top)
+		} else {
+			topTo(b, source.pop, target.push(source.top))
+		}
 	}
 
-	private def displace(box: Box, l0: List[Column], action: Action2)
-	: (List[Column], Column) = l0 match {
-		case column :: l1 => if (column.contains(box)) {
-				val newColumns = action(box, column)
-				(newColumns._1 :: l1, newColumns._2)
-			} else {
-				prependColumn(displace(box, l1, action), column)
-			}
-		case Nil => throw new IllegalArgumentException()
-	}
-
-	private def prependColumn(displacement: (List[Column], Column), column: Column)
-	: (List[Column], Column) = (column :: displacement._1, displacement._2)
-
-	private def pile(box: Box, source: Column): (Column, Column) = {
+	private def pile(box: Box, source: Column): Column = {
 		val unstacked = unstack(box, source, Column())
-		(unstacked._1, unstacked._2.push(box))
+		unstacked._1
 	}
 
 	private def move(box: Box, source: Column): Column = {
