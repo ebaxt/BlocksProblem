@@ -25,21 +25,26 @@ class StorageInFluxTest {
 			new StorageInFlux(Storage(Column("a"), Column()), Column("b")).over(new Box("a")))
 		assertEquals(Storage(Column("c"), Column("b", "a")), 
 			new StorageInFlux(Storage(Column("c"), Column("a")), Column("b")).over(new Box("a")))
+		assertEquals(Storage(Column("c"), Column("d", "b", "a")), 
+			new StorageInFlux(Storage(Column("c"), Column("b", "a")), Column("d")).over(new Box("a")))
 	}
 
 	@Test def pileOverShouldPlaceOnTop() {
 		assertEquals(Storage(Column("c"), Column("d", "b", "a")), 
 			new StorageInFlux(Storage(Column("c"), Column("a")), Column("b", "d")).over(new Box("a")))
-
 	}
 
-	@Ignore
 	@Test def moveOntoShouldPlaceInStack() {
-
+		assertEquals(Storage(Column("c"), Column("b", "a")), 
+			new StorageInFlux(Storage(Column("c"), Column("a")), Column("b")).onto(new Box("a")))
+		assertEquals(Storage(Column("c"), Column("b", "d", "a")), 
+			new StorageInFlux(Storage(Column("c"), Column("b", "a")), Column("d")).onto(new Box("a")))
+		assertEquals(Storage(Column("c"), Column("b", "e", "d", "a")), 
+			new StorageInFlux(Storage(Column("c"), Column("b", "e", "a")), Column("d")).onto(new Box("a")))
 	}
 
-	@Ignore
 	@Test def pileOntoShouldPlaceInStack() {
-
+		assertEquals(Storage(Column("c"), Column("b", "e", "d", "a")), 
+			new StorageInFlux(Storage(Column("c"), Column("b", "a")), Column("d", "e")).onto(new Box("a")))
 	}
 }
