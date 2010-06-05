@@ -1,44 +1,31 @@
 package Blocks
 
 final class Storage(val columns: List[Column]) {
-	def move(box: Box): StorageInFlux = {
-		val newCols = move(box, columns)
-		new StorageInFlux(new Storage(newCols), new Column(List(box)))
-	}
+	def move(box: Box): StorageInFlux = displace(box, move)
 
-	private def move(box: Box, l0: List[Column]): List[Column] = l0 match {
-		case column :: l1 => if (column.contains(box)) {
-				val newColumn = move(box, column)
-				newColumn :: l1
-			} else {
-				column :: move(box, l1)
-			}
-		case Nil => throw new IllegalArgumentException()
-	}
+	def pile(box: Box): StorageInFlux = displace(box, pile)
 
-	private def move(box: Box, column: Column): Column = if (column.isEmpty) {
-		throw new IllegalStateException()
-	} else {
-		val pop = column.pop
-		if (box == pop._2) pop._1
-		else move(box, pop._1).push(pop._2)
-	}
-
-	def pile(box: Box): StorageInFlux = {
-		val result = pile(box, columns)
+	def displace(box: Box, action: Action)
+	: StorageInFlux = {
+		val result = displace(box, columns, action)
 		new StorageInFlux(new Storage(result._1), result._2)
 	}
 
-	private def pile(box: Box, l0: List[Column]): (List[Column], Column) = l0 match {
+	private type Action = (Box, Column, Column) => (Column, Column)
+
+	private def displace(box: Box, l0: List[Column], action: Action)
+	: (List[Column], Column) = l0 match {
 		case column :: l1 => if (column.contains(box)) {
-				val newColumns = pile(box, column, Column())
+				val newColumns = action(box, column, Column())
 				(newColumns._1 :: l1, newColumns._2)
 			} else {
-				val recurse = pile(box, l1)
-				(column :: recurse._1, recurse._2)
+				prependColumn(displace(box, l1, action), column)
 			}
 		case Nil => throw new IllegalArgumentException()
 	}
+
+	private def prependColumn(displacement: (List[Column], Column), column: Column)
+	: (List[Column], Column) = (column :: displacement._1, displacement._2)
 
 	private def pile(box: Box, source: Column, target: Column): (Column, Column) = if (source.isEmpty) {
 		throw new IllegalStateException()
@@ -46,6 +33,17 @@ final class Storage(val columns: List[Column]) {
 		val pop = source.pop
 		if (box == pop._2) (pop._1, target.push(box))
 		else pile(box, pop._1, target.push(pop._2))
+	}
+
+	private def move(box: Box, source: Column, target: Column): (Column, Column) = if (source.isEmpty) {
+		throw new IllegalStateException()
+	} else {
+		val pop = source.pop
+		if (box == pop._2) (pop._1, new Column(List(box)))
+		else {
+			val result = move(box, pop._1, target)
+			(result._1.push(pop._2), result._2)
+		}
 	}
 
   override def equals(o: Any) = o match {
