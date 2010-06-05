@@ -34,7 +34,7 @@ final class Storage(val columns: List[Column]) {
 
 	private def move(box: Box, source: Column, target: Column): (Column, Column) = {
 		val unstacked = unstack(box, source, target)
-		(pushAll(unstacked._1, unstacked._2), new Column(List(box)))
+		(unstacked._1.pushAll(unstacked._2), new Column(List(box)))
 	}
 
 	/**
@@ -46,16 +46,6 @@ final class Storage(val columns: List[Column]) {
 	} else {
 		if (box == source.top) (source.pop, target)
 		else unstack(box, source.pop, target.push(source.top))
-	}
-
-	/**
-	 * Push all elements onto the stack
-	 */
-	private def pushAll(target: Column, source: Column)
-	: Column = if (source.isEmpty) {
-		target
-	} else {
-		pushAll(target.push(source.top), source.pop)
 	}
 
 	override def equals(o: Any) = o match {

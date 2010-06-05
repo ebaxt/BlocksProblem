@@ -54,4 +54,10 @@ class ColumnTest {
 		assertFalse(Column("a", "b").isEmpty)
 		assertTrue(Column().isEmpty)
 	}
+
+	@Test def pushAllShouldPushElementsInPopOrder() {
+		assertEquals(Column("a"), Column().pushAll(Column("a")))
+		assertEquals(Column("a", "b"), Column("b").pushAll(Column("a")))
+		assertEquals(Column("a", "b", "c", "d"), Column("c", "d").pushAll(Column("b", "a")))
+	}
 }
