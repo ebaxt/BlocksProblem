@@ -47,4 +47,24 @@ class StorageTest {
 		assertEquals(new StorageInFlux(Storage(Column("d"), Column("b", "c")), Column("a")),
 			Storage(Column("d", "a"), Column("b", "c")).move(new Box("a")))
 	}
+
+	@Test def testPileTopFromColumn() {
+		assertEquals(new StorageInFlux(Storage(Column(), Column("b", "c")), Column("a")),
+			Storage(Column("a"), Column("b", "c")).pile(new Box("a")))
+		assertEquals(new StorageInFlux(Storage(Column(), Column("b", "c")), Column("d")),
+			Storage(Column("d"), Column("b", "c")).pile(new Box("d")))
+		assertEquals(new StorageInFlux(Storage(Column("a"), Column("b", "c")), Column("d")),
+			Storage(Column("d", "a"), Column("b", "c")).pile(new Box("d")))
+		assertEquals(new StorageInFlux(Storage(Column("d", "a"), Column("c")), Column("b")),
+			Storage(Column("d", "a"), Column("b", "c")).pile(new Box("b")))
+	}
+
+	@Test def testPileNonTopFromColumn() {
+		assertEquals(Storage(Column("d", "a"), Column()),
+			Storage(Column("d", "a"), Column("b", "c")).pile(new Box("c")).storage)
+		assertEquals(new StorageInFlux(Storage(Column("d", "a"), Column()), Column("c", "b")),
+			Storage(Column("d", "a"), Column("b", "c")).pile(new Box("c")))
+		assertEquals(new StorageInFlux(Storage(Column("d"), Column("b", "c")), Column("a")),
+			Storage(Column("d", "a"), Column("b", "c")).move(new Box("a")))
+	}
 }

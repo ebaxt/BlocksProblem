@@ -24,7 +24,29 @@ final class Storage(val columns: List[Column]) {
 		else move(box, pop._1).push(pop._2)
 	}
 
-	def pile(box: Box): StorageInFlux = null
+	def pile(box: Box): StorageInFlux = {
+		val result = pile(box, columns)
+		new StorageInFlux(new Storage(result._1), result._2)
+	}
+
+	private def pile(box: Box, l0: List[Column]): (List[Column], Column) = l0 match {
+		case column :: l1 => if (column.contains(box)) {
+				val newColumns = pile(box, column, Column())
+				(newColumns._1 :: l1, newColumns._2)
+			} else {
+				val recurse = pile(box, l1)
+				(column :: recurse._1, recurse._2)
+			}
+		case Nil => throw new IllegalArgumentException()
+	}
+
+	private def pile(box: Box, source: Column, target: Column): (Column, Column) = if (source.isEmpty) {
+		throw new IllegalStateException()
+	} else {
+		val pop = source.pop
+		if (box == pop._2) (pop._1, target.push(box))
+		else pile(box, pop._1, target.push(pop._2))
+	}
 
   override def equals(o: Any) = o match {
     case other: Storage => other.columns == columns
