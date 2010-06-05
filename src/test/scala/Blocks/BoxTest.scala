@@ -7,7 +7,7 @@ import org.junit.runners.JUnit4
 import junit.framework.Assert
 
 @RunWith(classOf[JUnit4])
-class BlockTest  {
+class BoxTest  {
   @Test def shouldInitializeName() {
     Assert.assertEquals("a", new Box("a").name)
   }
