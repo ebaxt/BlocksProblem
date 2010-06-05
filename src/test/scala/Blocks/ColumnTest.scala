@@ -45,9 +45,19 @@ class ColumnTest {
 		assertEquals(Column("c", "a"), Column("b", "c", "a").pop)
 	}
 
+	@Test def popToShouldRemoveFromFront() {
+		assertEquals(Column("c", "a"), Column("b", "c", "a").popTo(new Box("b")))
+		assertEquals(Column("b"), Column("c", "a", "b").popTo(new Box("a")))
+	}
+
 	@Test def topShouldRetrieveFromFront() {
 		assertEquals(new Box("c"), Column("c", "a", "b").top)
 		assertEquals(new Box("b"), Column("b", "c", "a").top)
+	}
+
+	@Test def topToShouldRetrieveFromFront() {
+		assertEquals(Column("b"), Column("b", "c", "a").topTo(new Box("b")))
+		assertEquals(Column("a", "c"), Column("c", "a", "b").topTo(new Box("a")))
 	}
 
 	@Test def isEmptyShouldReflectContents() {

@@ -7,7 +7,7 @@ final class Storage(val columns: List[Column]) {
 	def pile(box: Box): StorageInFlux = {
 		val str = applyToMatchingColumns(box, pile)
 		val bit = columns.find(c => c.contains(box)) match {
-			case Some(c) => topTo(box, c, Column())
+			case Some(c) => c.topTo(box)
 			case None => throw new IllegalStateException()
 		}
 		new StorageInFlux(str, bit)
@@ -19,33 +19,13 @@ final class Storage(val columns: List[Column]) {
 		new Storage(columns.map(
 			c => if (c.contains(box)) action(box, c) else c))
 
-	/**
-	 * The top of the column, to and including b.
-	 */
-	private def topTo(b: Box, source: Column, target: Column)
-	: Column = if (source.isEmpty) throw new IllegalStateException()
-	else {
-		if (source.top == b) target.push(source.top)
-		else topTo(b, source.pop, target.push(source.top))
-	}
-
-	/**
-	 * Pop elements from the column, to and including b.
-	 */
-	private def popTo(b: Box, source: Column)
-	: Column = if (source.isEmpty) throw new IllegalStateException()
-	else {
-		if (source.top == b) source.pop
-		else popTo(b, source.pop)
-	}
-
 	private def pile(box: Box, source: Column): Column = {
-		popTo(box, source)
+		source.popTo(box)
 	}
 
 	private def move(box: Box, source: Column): Column = {
-		val remainder = popTo(box, source)
-		val popped = topTo(box, source, Column()).pop
+		val remainder = source.popTo(box)
+		val popped = source.topTo(box).pop
 		remainder.pushAll(popped)
 	}
 
